@@ -1,0 +1,26 @@
+{
+  "name": "Week07-Day01",
+  "version": "1.0.0",
+  "description": "Today's Agenda\r - Intro to Sequelize\r - MVC Paradigm\r - RESTful Routing",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QFults/Week07-Day01.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/QFults/Week07-Day01/issues"
+  },
+  "homepage": "https://github.com/QFults/Week07-Day01#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.5.1"
+  }
+}
