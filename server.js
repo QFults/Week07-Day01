@@ -15,10 +15,24 @@ const sequelize = new Sequelize('mysql://root:rootroot@localhost/users_db')
 class User extends Model { }
 
 User.init({
-  name: DataTypes.STRING,
-  email: DataTypes.STRING,
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  email: {
+    type: DataTypes.STRING,
+    unique: true
+  },
   username: DataTypes.STRING,
-  phone: DataTypes.INTEGER
+  phone: {
+    type: DataTypes.INTEGER,
+    defaultValue: 1
+  }
+  // increment: {
+  //   type: DataTypes.INTEGER,
+  //   autoIncrement: true,
+  //   primaryKey: true
+  // }
 }, {
   sequelize,
   modelName: 'users'
