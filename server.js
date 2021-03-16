@@ -1,6 +1,6 @@
 const express = require('express')
 // const { join } = require('path')
-const { Sequelize, DataTypes, Model } = require('sequelize')
+const { Sequelize, DataTypes, Model, Op } = require('sequelize')
 
 const app = express()
 
@@ -37,6 +37,34 @@ User.init({
   sequelize,
   modelName: 'users'
 })
+
+// User.create({
+//   name: 'Jane Doe',
+//   email: 'janedoe@gmail.com',
+//   username: 'janedoe',
+//   phone: 12345
+// })
+//   .then(user => {
+//     console.log(user.name)
+//   })
+//   .catch(err => console.log(err))
+
+// User.findAll({ where: { name: 'John Doe' } })
+//   .then(users => {
+//     users.forEach(user => console.log(`${user.name}, ${user.email}, ${user.username}`))
+//   })
+//   .catch(err => console.log(err))
+
+User.findOne({
+  where: {
+    // [Op.and]: [{ name: 'Jane Doe' }, { email: 'janedoe@gmail.com' }]
+    [Op.or]: [{ name: 'John Doe' }, { email: 'johndoe@gmail.com' }]
+  }
+})
+  .then(user => {
+    console.log(user)
+  })
+  .catch(err => console.log(err))
 
 sequelize.sync()
   .then(() => app.listen(process.env.PORT || 3000))
