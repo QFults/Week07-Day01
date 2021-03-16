@@ -55,14 +55,26 @@ User.init({
 //   })
 //   .catch(err => console.log(err))
 
-User.findOne({
-  where: {
-    // [Op.and]: [{ name: 'Jane Doe' }, { email: 'janedoe@gmail.com' }]
-    [Op.or]: [{ name: 'John Doe' }, { email: 'johndoe@gmail.com' }]
-  }
-})
-  .then(user => {
-    console.log(user)
+// User.findOne({
+//   where: {
+//     // [Op.and]: [{ name: 'Jane Doe' }, { email: 'janedoe@gmail.com' }]
+//     [Op.or]: [{ name: 'John Doe' }, { email: 'johndoe@gmail.com' }]
+//   }
+// })
+//   .then(user => {
+//     console.log(user)
+//   })
+//   .catch(err => console.log(err))
+
+// User.update({ username: 'johndoe1', name: 'JOHN DOE' }, { where: { id: 1 } })
+//   .then(res => {
+//     console.log(res)
+//   })
+//   .catch(err => console.log(err))
+
+User.destroy({ where: { id: 1 } })
+  .then(res => {
+    console.log(res)
   })
   .catch(err => console.log(err))
 
