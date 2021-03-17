@@ -1,14 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 </head>
+
 <body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <form>
+          <div class="mb-3">
+            <label for="title" class="form-label">title</label>
+            <input type="text" class="form-control" id="title">
+          </div>
+          <div class="mb-3">
+            <label for="artist" class="form-label">artist</label>
+            <input type="text" class="form-control" id="artist">
+          </div>
+          <div class="mb-3">
+            <label for="album" class="form-label">album</label>
+            <input type="text" class="form-control" id="album">
+          </div>
+          <button id="addSong" type="submit" class="btn btn-primary">Add Song</button>
+        </form>
+      </div>
+      <div class="col-md-6">
+        <ul class="list-group" id="songs"></ul>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateModalLabel">Update Song</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="uTitle" class="col-form-label">title</label>
+              <input type="text" class="form-control" id="uTitle">
+            </div>
+            <div class="mb-3">
+              <label for="uArtist" class="col-form-label">artist</label>
+              <input type="text" class="form-control" id="uArtist">
+            </div>
+            <div class="mb-3">
+              <label for="uAlbum" class="col-form-label">album</label>
+              <input type="text" class="form-control" id="uAlbum">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="updateSong" type="button" class="btn btn-warning" data-bs-dismiss="modal">Update Song</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+    crossorigin="anonymous"></script>
   <script>
+
+    const getSongs = () => {
+      axios.get('/api/songs')
+        .then(({ data: songs }) => {
+          document.getElementById('songs').innerHTML = ''
+          songs.forEach(song => {
+            let songElem = document.createElement('li')
+            songElem.className = 'list-group-item d-flex justify-content-between align-items-center'
+            songElem.innerHTML = `
+          <p>Title: ${song.title}</p>
+          <p>Artist: ${song.artist}</p>
+          <p>Album: ${song.album}</p>
+          <button class="btn btn-warning" data-bs-target="#updateModal" data-bs-toggle="modal" data-id="${song.id}">Update</button>
+          <button class="btn btn-danger deleteSong" data-id="${song.id}">Delete</button>
+          `
+            document.getElementById('songs').append(songElem)
+          })
+        })
+        .catch(err => console.error(err))
+    }
+
+    document.getElementById('addSong').addEventListener('click', event => {
+      event.preventDefault()
+      axios.post('/api/songs', {
+        title: document.getElementById('title').value,
+        artist: document.getElementById('artist').value,
+        album: document.getElementById('album').value
+      })
+        .then(({ data: song }) => {
+          let songElem = document.createElement('li')
+          songElem.className = 'list-group-item d-flex justify-content-between align-items-center'
+          songElem.innerHTML = `
+          <p>Title: ${song.title}</p>
+          <p>Artist: ${song.artist}</p>
+          <p>Album: ${song.album}</p>
+          <button class="btn btn-warning" data-bs-target="#updateModal" data-bs-toggle="modal" data-id="${song.id}">Update</button>
+          <button class="btn btn-danger deleteSong" data-id="${song.id}">Delete</button>
+          `
+          document.getElementById('songs').append(songElem)
+        })
+        .catch(err => console.error(err))
+    })
+
+    document.getElementById('updateModal').addEventListener('show.bs.modal', event => {
+      let id = event.relatedTarget.dataset.id
+      axios.get(`/api/songs/${id}`)
+        .then(({ data: song }) => {
+          document.getElementById('uTitle').value = song.title
+          document.getElementById('uArtist').value = song.artist
+          document.getElementById('uAlbum').value = song.album
+          document.getElementById('updateSong').dataset.id = song.id
+        })
+        .catch(err => console.error(err))
+    })
+
+    document.getElementById('updateSong').addEventListener('click', event => {
+      let id = event.target.dataset.id
+      axios.put(`/api/songs/${id}`, {
+        title: document.getElementById('uTitle').value,
+        artist: document.getElementById('uArtist').value,
+        album: document.getElementById('uAlbum').value
+      })
+        .then(() => {
+          getSongs()
+        })
+        .catch(err => console.error(err))
+    })
+
+    document.addEventListener('click', event => {
+      if (event.target.classList.contains('deleteSong')) {
+        let id = event.target.dataset.id
+        axios.delete(`/api/songs/${id}`)
+          .then(() => {
+            event.target.parentNode.remove()
+          })
+          .catch(err => console.error(err))
+      }
+    })
+
+    getSongs()
 
     // axios.get('/api/songs')
     //   .then(({ data }) => {
@@ -33,7 +174,7 @@
     //     console.log(data)
     //   })
     //   .catch(err => console.error(err))
-    
+
     // let updates = {
     //   artist: 'Weird Al'
     // }
@@ -50,4 +191,5 @@
     //   .catch(err => console.error(err))
   </script>
 </body>
+
 </html>
